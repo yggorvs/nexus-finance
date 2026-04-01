@@ -32,6 +32,8 @@
             --cp-orange-dim: #b34700;
             --cp-green: #00ff88;
             --cp-green-dim: #00b35f;
+            --cp-purple: #a855f7;
+            --cp-purple-dim: #7c3aed;
             
             /* Backgrounds */
             --bg-dark: #0a0a0f;
@@ -49,11 +51,6 @@
             --glow-yellow: 0 0 10px rgba(252, 238, 10, 0.5), 0 0 20px rgba(252, 238, 10, 0.3);
             --glow-magenta: 0 0 10px rgba(255, 0, 85, 0.5), 0 0 20px rgba(255, 0, 85, 0.3);
             --glow-green: 0 0 10px rgba(0, 255, 136, 0.5), 0 0 20px rgba(0, 255, 136, 0.3);
-            
-            /* Borders */
-            --border-cyan: 1px solid rgba(0, 240, 255, 0.3);
-            --border-yellow: 1px solid rgba(252, 238, 10, 0.3);
-            --border-magenta: 1px solid rgba(255, 0, 85, 0.3);
             
             /* Fonts */
             --font-display: 'Orbitron', sans-serif;
@@ -113,6 +110,7 @@
         .text-yellow { color: var(--cp-yellow); }
         .text-magenta { color: var(--cp-magenta); }
         .text-green { color: var(--cp-green); }
+        .text-purple { color: var(--cp-purple); }
         .text-dim { color: var(--text-secondary); }
 
         /* Glitch Text Effect */
@@ -637,6 +635,29 @@
             margin-bottom: 2rem;
         }
 
+        /* Category Legend */
+        .category-legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
         /* ============================================
            CHATBOT CYBERPUNK
            ============================================ */
@@ -889,6 +910,25 @@
             letter-spacing: 2px;
         }
 
+        /* Category Select Styling */
+        .category-select-wrapper {
+            position: relative;
+        }
+        .category-select-wrapper select {
+            appearance: none;
+            padding-right: 2.5rem;
+        }
+        .category-select-wrapper::after {
+            content: '▼';
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--cp-cyan);
+            font-size: 0.7rem;
+            pointer-events: none;
+        }
+
         /* ============================================
            TOAST
            ============================================ */
@@ -1136,12 +1176,53 @@
                         <form onsubmit="app.setBudget(event)" class="form-cyber">
                             <div class="form-group">
                                 <label>Categoria</label>
-                                <select id="budget-cat" class="input-cyber">
-                                    <option value="Alimentação">Alimentação</option>
-                                    <option value="Moradia">Moradia</option>
-                                    <option value="Lazer">Lazer</option>
-                                    <option value="Transporte">Transporte</option>
-                                </select>
+                                <div class="category-select-wrapper">
+                                    <select id="budget-cat" class="input-cyber">
+                                        <!-- PESSOAL -->
+                                        <optgroup label="═══ PESSOAL ═══">
+                                            <option value="Alimentação">🍔 Alimentação</option>
+                                            <option value="Moradia">🏠 Moradia</option>
+                                            <option value="Saúde">💊 Saúde</option>
+                                            <option value="Educação">📚 Educação</option>
+                                            <option value="Transporte">🚗 Transporte</option>
+                                            <option value="Lazer">🎮 Lazer</option>
+                                            <option value="Vestuário">👕 Vestuário</option>
+                                            <option value="Beleza">💄 Beleza</option>
+                                            <option value="Pets">🐾 Pets</option>
+                                            <option value="Academia">💪 Academia</option>
+                                            <option value="Assinaturas">📺 Assinaturas</option>
+                                        </optgroup>
+                                        <!-- NEGÓCIOS -->
+                                        <optgroup label="═══ NEGÓCIOS ═══">
+                                            <option value="Vendas">💰 Vendas</option>
+                                            <option value="Marketing">📢 Marketing</option>
+                                            <option value="Escritório">🏢 Escritório</option>
+                                            <option value="Impostos">📑 Impostos</option>
+                                            <option value="Folha de Pagamento">👥 Folha de Pagamento</option>
+                                            <option value="Equipamentos">💻 Equipamentos</option>
+                                            <option value="Serviços Profissionais">⚖️ Serviços Profissionais</option>
+                                            <option value="Manutenção">🔧 Manutenção</option>
+                                            <option value="Logística">📦 Logística</option>
+                                        </optgroup>
+                                        <!-- INVESTIMENTOS -->
+                                        <optgroup label="═══ INVESTIMENTOS ═══">
+                                            <option value="Ações">📈 Ações</option>
+                                            <option value="FIIs">🏘️ FIIs</option>
+                                            <option value="Cripto">₿ Cripto</option>
+                                            <option value="Reserva de Emergência">🛡️ Reserva de Emergência</option>
+                                            <option value="Previdência">👴 Previdência</option>
+                                        </optgroup>
+                                        <!-- OUTROS -->
+                                        <optgroup label="═══ OUTROS ═══">
+                                            <option value="Geral">📋 Geral</option>
+                                            <option value="Salário">💵 Salário</option>
+                                            <option value="Freelance">💼 Freelance</option>
+                                            <option value="Doações">❤️ Doações</option>
+                                            <option value="Empréstimos">💳 Empréstimos</option>
+                                            <option value="Seguros">🛡️ Seguros</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label>Limite (€$)</label>
@@ -1155,7 +1236,7 @@
                 </div>
             </div>
             
-            <!-- VIEW: REPORTS (COMPLETO) -->
+            <!-- VIEW: REPORTS -->
             <div id="view-reports" class="view-section hidden">
                 <!-- Stats Cards -->
                 <div class="reports-grid">
@@ -1309,14 +1390,53 @@
                 </div>
                 <div class="form-group">
                     <label>Categoria</label>
-                    <select id="t-category" class="input-cyber">
-                        <option value="Geral">Geral</option>
-                        <option value="Alimentação">Alimentação</option>
-                        <option value="Moradia">Moradia</option>
-                        <option value="Lazer">Lazer</option>
-                        <option value="Salário">Salário</option>
-                        <option value="Vendas">Vendas</option>
-                    </select>
+                    <div class="category-select-wrapper">
+                        <select id="t-category" class="input-cyber">
+                            <!-- PESSOAL -->
+                            <optgroup label="═══ PESSOAL ═══">
+                                <option value="Alimentação">🍔 Alimentação</option>
+                                <option value="Moradia">🏠 Moradia</option>
+                                <option value="Saúde">💊 Saúde</option>
+                                <option value="Educação">📚 Educação</option>
+                                <option value="Transporte">🚗 Transporte</option>
+                                <option value="Lazer">🎮 Lazer</option>
+                                <option value="Vestuário">👕 Vestuário</option>
+                                <option value="Beleza">💄 Beleza</option>
+                                <option value="Pets">🐾 Pets</option>
+                                <option value="Academia">💪 Academia</option>
+                                <option value="Assinaturas">📺 Assinaturas</option>
+                            </optgroup>
+                            <!-- NEGÓCIOS -->
+                            <optgroup label="═══ NEGÓCIOS ═══">
+                                <option value="Vendas">💰 Vendas</option>
+                                <option value="Marketing">📢 Marketing</option>
+                                <option value="Escritório">🏢 Escritório</option>
+                                <option value="Impostos">📑 Impostos</option>
+                                <option value="Folha de Pagamento">👥 Folha de Pagamento</option>
+                                <option value="Equipamentos">💻 Equipamentos</option>
+                                <option value="Serviços Profissionais">⚖️ Serviços Profissionais</option>
+                                <option value="Manutenção">🔧 Manutenção</option>
+                                <option value="Logística">📦 Logística</option>
+                            </optgroup>
+                            <!-- INVESTIMENTOS -->
+                            <optgroup label="═══ INVESTIMENTOS ═══">
+                                <option value="Ações">📈 Ações</option>
+                                <option value="FIIs">🏘️ FIIs</option>
+                                <option value="Cripto">₿ Cripto</option>
+                                <option value="Reserva de Emergência">🛡️ Reserva de Emergência</option>
+                                <option value="Previdência">👴 Previdência</option>
+                            </optgroup>
+                            <!-- OUTROS -->
+                            <optgroup label="═══ OUTROS ═══">
+                                <option value="Geral">📋 Geral</option>
+                                <option value="Salário">💵 Salário</option>
+                                <option value="Freelance">💼 Freelance</option>
+                                <option value="Doações">❤️ Doações</option>
+                                <option value="Empréstimos">💳 Empréstimos</option>
+                                <option value="Seguros">🛡️ Seguros</option>
+                            </optgroup>
+                        </select>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Data</label>
@@ -1343,6 +1463,14 @@
                 currentUser: null
             },
             charts: {},
+
+            // Categorias completas do sistema
+            categories: {
+                pessoal: ['Alimentação', 'Moradia', 'Saúde', 'Educação', 'Transporte', 'Lazer', 'Vestuário', 'Beleza', 'Pets', 'Academia', 'Assinaturas'],
+                negocios: ['Vendas', 'Marketing', 'Escritório', 'Impostos', 'Folha de Pagamento', 'Equipamentos', 'Serviços Profissionais', 'Manutenção', 'Logística'],
+                investimentos: ['Ações', 'FIIs', 'Cripto', 'Reserva de Emergência', 'Previdência'],
+                outros: ['Geral', 'Salário', 'Freelance', 'Doações', 'Empréstimos', 'Seguros']
+            },
 
             init() {
                 const storedTrans = localStorage.getItem('nexus_transactions');
@@ -1517,9 +1645,6 @@
                 }
             },
 
-            // ============================================
-            // RELATÓRIOS COMPLETOS
-            // ============================================
             renderReports() {
                 // Destroy old charts
                 Object.values(this.charts).forEach(chart => {
@@ -1569,12 +1694,10 @@
 
                 // Chart 1: Balance Evolution (Line Chart)
                 const balanceData = [];
-                let runningBalance = 0;
-                const sortedTransactions = [...this.data.transactions].sort((a, b) => new Date(a.date) - new Date(b.date));
                 const balanceLabels = [];
-                
-                // Group by month for balance chart
                 const balanceByMonth = {};
+                const sortedTransactions = [...this.data.transactions].sort((a, b) => new Date(a.date) - new Date(b.date));
+                
                 sortedTransactions.forEach(t => {
                     const d = new Date(t.date + 'T12:00:00');
                     const key = `${d.getMonth()}/${d.getFullYear()}`;
@@ -1807,7 +1930,10 @@
                         labels: Object.keys(categories),
                         datasets: [{ 
                             data: Object.values(categories), 
-                            backgroundColor: ['#00f0ff', '#ff0055', '#fcee0a', '#00ff88', '#ff6600'],
+                            backgroundColor: [
+                                '#00f0ff', '#ff0055', '#fcee0a', '#00ff88', '#ff6600',
+                                '#a855f7', '#ec4899', '#14b8a6', '#f97316', '#8b5cf6'
+                            ],
                             borderWidth: 0
                         }]
                     },

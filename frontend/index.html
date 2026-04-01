@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS FINANCE | Cyberpunk Edition</title>
+    
+    <!-- Fontes e Ícones -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* [MANTER TODO O CSS ANTERIOR AQUI] */
+        /* ... (todo o CSS cyberpunk que já tínhamos) ... */
+    </style>
+</head>
+<body>
+    <!-- [MANTER TODO O HTML ANTERIOR AQUI] -->
+    <!-- ... (todo o HTML que já tínhamos) ... -->
+
+    <script>
+        // API Configuration
+        const API_URL = 'http://localhost:3000/api';
+        
+        // Nexus API Client
+        const nexusAPI = {
+            token: localStorage.getItem('nexus_token'),
+            
+            setToken(token) {
+                this.token = token;
+                localStorage.setItem('nexus_token', token);
+            },
+            
+            clearToken() {
+                this.token = null;
+                localStorage.removeItem('nexus_token');
+            },
+            
+            async request(endpoint, options = {}) {
+                const headers = {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                };
+                
+                if (this.token) {
+                    headers['Authorization'] = `Bearer ${this.token}`;
+                }
+                
+                const config = {
+                    ...options,
+                    headers
+                };
+                
+                try {
+                    const response = await fetch(`${API_URL}${endpoint}`, config);
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Request failed');
+                    }
+                    
+                    return data;
+                } catch (error) {
+                    console.error('[API Error]', error);
+                    throw error;
+                }
+            },
+            
+            // Auth endpoints
+            async login(email, password) {
+                const data = await this.request('/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ email, password })
+                });
+                this.setToken(data.token);
+                return data;
+            },
+            
+            async register(email, password, name) {
+                const data = await this.request('/auth/register', {
+                    method: 'POST',
+                    body: JSON.stringify({ email, password, name })
+                });
+                this.setToken(data.token);
+                return data;
+            },
+            
+            async getProfile() {
+                return await this.request('/auth/profile');
+            },
+            
+            // Transaction endpoints
+            async getTransactions(filters = {}) {
+                const queryString = new URLSearchParams(filters).toString();
+                return await this.request(`/transactions?${queryString}`);
+            },
+            
+            async createTransaction(transaction) {
+                return await this.request('/transactions', {
+                    method: 'POST',
+                    body: JSON.stringify(transaction)
+                });
+            },
+            
+            async updateTransaction(id, transaction) {
+                return await this.request(`/transactions/${id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(transaction)
+                });
+            },
+            
+            async deleteTransaction(id) {
+                return await this.request(`/transactions/${id}`, {
+                    method: 'DELETE'
+                });
+            },
+            
+            async getStats() {
+                return await this.request('/transactions/stats');
+            }
+        };
+
+        // App Logic (atualizado para usar API)
+        const app = {
+            data: {
+                transactions: [],
+                budgets: {},
+                currentUser: null
+            },
+            charts: {},
+
+            async init() {
+                // Check if user is logged in
+                if (nexusAPI.token) {
+                    try {
+                        const profile = await nexusAPI.getProfile();
+                        this.data.currentUser = profile.user;
+                        await this.loadTransactions();
+                        this.showApp();
+                    } catch (error) {
+                        nexusAPI.clearToken();
+                        console.error('[INIT] Token invalid:', error);
+                    }
+                }
+
+                // Setup login form
+                document.getElementById('loginForm').addEventListener('submit', (e) => this.handleLogin(e));
+                document.getElementById('t-date').valueAsDate = new Date();
+            },
+
+            async handleLogin(e) {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                try {
+                    const response = await nexusAPI.login(email, password);
+                    this.data.currentUser = response.user;
+                    await this.loadTransactions();
+                    this.showApp();
+                    this.showToast('Conexão estabelecida com sucesso', 'success');
+                } catch (error) {
+                    this.showToast(error.message || 'Falha na autenticação', 'error');
+                }
+            },
+
+            async loadTransactions() {
+                try {
+                    const response = await nexusAPI.getTransactions();
+                    this.data.transactions = response.transactions;
+                } catch (error) {
+                    this.showToast('Erro ao carregar transações', 'error');
+                }
+            },
+
+            logout() {
+                nexusAPI.clearToken();
+                location.reload();
+            },
+
+            showApp() {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('app-container').classList.remove('hidden');
+                this.navigate('dashboard');
+                chatbot.init();
+            },
+
+            async saveTransaction(e) {
+                e.preventDefault();
+                const id = document.getElementById('edit-id').value;
+                const transactionData = {
+                    description: document.getElementById('t-desc').value,
+                    amount: parseFloat(document.getElementById('t-amount').value),
+                    type: document.getElementById('t-type').value,
+                    category: document.getElementById('t-category').value,
+                    date: document.getElementById('t-date').value
+                };
+
+                try {
+                    if (id) {
+                        await nexusAPI.updateTransaction(id, transactionData);
+                        this.showToast('Dados atualizados', 'success');
+                    } else {
+                        await nexusAPI.createTransaction(transactionData);
+                        this.showToast('Transação registrada', 'success');
+                    }
+                    
+                    await this.loadTransactions();
+                    this.closeModal();
+                    this.renderDashboard();
+                } catch (error) {
+                    this.showToast(error.message || 'Erro ao salvar', 'error');
+                }
+            },
+
+            async deleteTransaction(id) {
+                if(confirm('Confirmar exclusão do registro?')) {
+                    try {
+                        await nexusAPI.deleteTransaction(id);
+                        await this.loadTransactions();
+                        this.renderDashboard();
+                        this.showToast('Registro removido', 'success');
+                    } catch (error) {
+                        this.showToast('Erro ao excluir', 'error');
+                    }
+                }
+            },
+
+            // ... [RESTANTE DO CÓDIGO DO APP MANTIDO] ...
+            // (Mantenha todas as outras funções do app, renderDashboard, renderCharts, etc.)
+        };
+
+        // Initialize App
+        app.init();
+    </script>
+</body>
+</html>
